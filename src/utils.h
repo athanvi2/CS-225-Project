@@ -8,6 +8,7 @@
 #include <cassert>
 #include <fstream>
 #include <unordered_map>
+#include <cmath>
 
 std::vector<std::string> GetSubstrs(const std::string& str, char delimiter);
 
