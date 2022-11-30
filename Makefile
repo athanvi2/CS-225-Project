@@ -5,8 +5,8 @@ CXX_FLAGS=-std=c++20 -g -fstandalone-debug -Wall -Wextra -Werror -pedantic $(INC
 
 exec: bin/exec
 
-bin/exec: src/main.cpp 
-	${CXX} ${CXX_FLAGS} src/main.cpp -o bin/exec
+bin/exec: src/main.cpp src/graph.cpp src/utils.cpp
+	${CXX} ${CXX_FLAGS} src/main.cpp src/graph.cpp src/utils.cpp -o bin/exec
 
 .PHONY: clean exec 
 
