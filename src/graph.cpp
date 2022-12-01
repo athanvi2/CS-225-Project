@@ -30,11 +30,6 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
         adj_.at(edge.second.index).at(edge.first.index) = dist;
     }
 
-    // std::cout << adj_.size() << std::endl;
-    // for (auto ap : adj_) {
-    //     for (auto value : ap) std::cout << value << " ";
-    //     std::cout << std::endl;
-    // }
 }
 
 double Graph::getDistance(std::string airport_one, std::string airport_two) {
@@ -71,8 +66,15 @@ double Graph::calcEdgeDistance(std::string airport_one, std::string airport_two)
 }
 
 airport Graph::createAirport(std::vector<std::string> line) {
-    (void) line;
     airport ap;
+
+    ap.name = line.at(0);
+    ap.code = line.at(1);
+    
+    std::cout << "FIRST: " << line.at(2) << "   SECOND: " << line.at(3) << std::endl;
+
+    if (line.at(2).size() != 0) ap.latitude = std::stoi(line.at(2));
+    if (line.at(3).size() != 0) ap.longitude = std::stoi(line.at(3));
     return ap;
 }
 
