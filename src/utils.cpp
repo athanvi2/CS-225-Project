@@ -19,6 +19,9 @@ std::vector<std::string> GetSubstrs(const std::string& str, char delimiter) {
 std::vector<std::vector<std::string>> CsvTwoD(const std::string& file) {
   std::ifstream ifs{file};
   std::vector<std::vector<std::string>> csv;
+  
+  std::string line;
+  std::getline(ifs, line);
   for (std::string line; std::getline(ifs, line); line = "") {
     std::vector<std::string> temp = GetSubstrs(line, ',');
     csv.push_back(temp);

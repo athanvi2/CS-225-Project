@@ -21,3 +21,6 @@ TEST_CASE("Valid Airport Code (Calc Dist)") {
     double result = calcEdgeDistance(airport_one, airport_two);
     REQUIRE(int (result) == 107);
 }
+
+
+// Testing if entire grpah is correct

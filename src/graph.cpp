@@ -6,8 +6,9 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
     std::vector<std::vector<std::string>> routes_vect = CsvTwoD(routes_csv);
 
     // populate airports
-    for (auto& ap : airports_vect) {
-        airport curr_airport = createAirport(ap);
+    for (unsigned i = 0; i < airports_vect.size(); i++) {
+        airport curr_airport = createAirport(airports_vect[i]);
+        curr_airport.index = i;
         airports.push_back(curr_airport);
     }
 
@@ -18,21 +19,22 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
         routes.push_back(std::make_pair(start_airport, dest_airport));
     }
 
-    // fill adj_ with airports, each cell is 0.0
-    for (airport& ap : airports) {
-        std::map<airport, double> temp;
-        for (airport& inner_ap : airports) {
-            temp[inner_ap] = 0.0;
-        }
-        adj_[ap] = temp;
-    }
+    // resize adj_
+    adj_.resize(airports.size());
+    for (unsigned i = 0; i < airports.size(); i++) adj_[i].resize(airports.size(), 0.0);
 
     // populate adj_ matrix with values
     for (std::pair<airport, airport>& edge : routes) {
         double dist = calcEdgeDistance(edge.first.code, edge.second.code);
-        adj_[edge.first][edge.second] = dist;
-        adj_[edge.second][edge.first] = dist;
+        adj_.at(edge.first.index).at(edge.second.index) = dist;
+        adj_.at(edge.second.index).at(edge.first.index) = dist;
     }
+
+    // std::cout << adj_.size() << std::endl;
+    // for (auto ap : adj_) {
+    //     for (auto value : ap) std::cout << value << " ";
+    //     std::cout << std::endl;
+    // }
 }
 
 double Graph::getDistance(std::string airport_one, std::string airport_two) {

@@ -12,3 +12,4 @@ bin/exec: src/main.cpp src/graph.cpp src/utils.cpp
 
 clean:
 		rm -fr bin/*
+
