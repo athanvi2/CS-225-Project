@@ -55,9 +55,11 @@ class Graph {
         */
         airport convertCodeToAirport(std::string airport_code);
 
+        std::vector<airport> airports;
+
     private:
         /* Vector of all vertices */ 
-        std::vector<airport> airports; 
+         
         /* Vector of all edges */
         std::vector<std::pair<airport, airport>> routes;
         /* 

@@ -46,7 +46,7 @@ double Graph::calcEdgeDistance(std::string airport_one, std::string airport_two)
         if (ap.code == airport_two) second_ap = ap;
     }
     // Checking for invalid aiport_name entries
-    if (first_ap.code == "" || second_ap.code == "") return 0.0; 
+    if (first_ap.code == "" || second_ap.code == "") return -1.0; 
 
     // Calculating Distance
     double lat1 = first_ap.latitude; double lat2 = second_ap.latitude;
@@ -71,10 +71,10 @@ airport Graph::createAirport(std::vector<std::string> line) {
     ap.name = line.at(0);
     ap.code = line.at(1);
     
-    std::cout << "FIRST: " << line.at(2) << "   SECOND: " << line.at(3) << std::endl;
+    // std::cout << "FIRST: " << line.at(2) << "   SECOND: " << line.at(3) << std::endl;
 
-    if (line.at(2).size() != 0) ap.latitude = std::stoi(line.at(2));
-    if (line.at(3).size() != 0) ap.longitude = std::stoi(line.at(3));
+    ap.latitude = std::stod(line.at(2));
+    ap.longitude = std::stod(line.at(3));
     return ap;
 }
 
