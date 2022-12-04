@@ -55,9 +55,18 @@ class Graph {
         */
         airport convertCodeToAirport(std::string airport_code);
 
+        
+        double BFS(airport start, airport dest);
+
+        double backTrack(airport start, airport dest, std::vector<std::vector<std::pair<double,int>>> bfs_adj);
+
+        std::vector<airport> airports;
+
+        std::vector<std::vector<double>> adj_;
+
     private:
         /* Vector of all vertices */ 
-        std::vector<airport> airports; 
+        
         /* Vector of all edges */
         std::vector<std::pair<airport, airport>> routes;
         /* 
@@ -66,7 +75,8 @@ class Graph {
          * get the airport by comparing the code given to existing airports, then search
          * adj_[airport_one.index][airport_two.index]
          */
-        std::vector<std::vector<double>> adj_;
+        
+        
 };
 
 
