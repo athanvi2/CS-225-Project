@@ -21,23 +21,125 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
 
     // resize adj_
     adj_.resize(airports.size());
-    for (unsigned i = 0; i < airports.size(); i++) adj_[i].resize(airports.size(), 0.0);
+    for (unsigned i = 0; i < airports.size(); i++) adj_[i].resize(airports.size(),2.0);
 
     // populate adj_ matrix with values
-    for (std::pair<airport, airport>& edge : routes) {
-        double dist = calcEdgeDistance(edge.first.code, edge.second.code);
-        adj_.at(edge.first.index).at(edge.second.index) = dist;
-        adj_.at(edge.second.index).at(edge.first.index) = dist;
+    for (unsigned i = 0; i < routes.size(); i++) {
+        double dist = calcEdgeDistance(routes[i].first.code, routes[i].second.code);
+        adj_.at(routes[i].first.index).at(routes[i].second.index) = dist;
+        adj_.at(routes[i].second.index).at(routes[i].first.index) = dist;
+
+        routes[i].first.connected.push_back(std::make_pair(routes[i].second, dist));
+        routes[i].second.connected.push_back(std::make_pair(routes[i].first, dist));
+        std::cout << adj_[1][0] << std::endl;
+
+        // std::cout << (adj_.at(routes[i].first.index).at(routes[i].second.index) == dist) << std::endl;
     }
+    
+
+    // for (auto cell : adj_[4]) std::cout << cell << std::endl;
+
+
+
+}
+double Graph::BFS(airport start, airport dest) {
+    std::queue<std::pair<std::pair<airport, airport>,int>> visited;
+
+
+    // Resize and populate visited nodes
+    std::vector<std::pair<airport, bool>> airports_visited;
+    airports_visited.resize(airports.size());
+
+    // 0 - not visited, 1 - discovery, 2 - cross 
+    // Generate BFS's Adjacency Matrix
+    std::vector<std::vector<std::pair<double,int>>> bfs_adj;
+    bfs_adj.resize(airports.size());
+    for (unsigned i = 0; i < airports.size(); i++) {
+        bfs_adj[i].resize(airports.size());
+        airports_visited.push_back(std::make_pair(airports.at(i), false));
+    }
+    for (unsigned row = 0; row < bfs_adj.size(); row++) {
+        for (unsigned col = 0; col < bfs_adj[row].size(); col++) {
+            bfs_adj[row][col] = std::make_pair(adj_[row][col], 0);
+        }
+    }
+
+    // Populating bfs_adj
+    for (unsigned i = 0; i < start.connected.size(); i++) {
+        std::pair<airport, airport> route = std::make_pair(start,start.connected[i].first);
+        std::pair<std::pair<airport, airport>, int> edge = std::make_pair(route, 0);
+        visited.push(edge);
+    }
+    airports_visited.at(start.index).second = true;
+    while (!visited.empty() && airports_visited.at(dest.index).second == false) {
+        // @Todo: Break when destination airport found
+        std::pair<std::pair<airport, airport>, int> curr_edge = visited.front();
+        visited.pop();
+        airport dest_airport = curr_edge.first.second;
+
+        int edge_status = bfs_adj[curr_edge.first.first.index][curr_edge.first.second.index].second;
+        if (edge_status == 0) {
+            if (airports_visited.at(dest_airport.index).second == true) 
+                bfs_adj[curr_edge.first.first.index][curr_edge.first.second.index].second = 2;
+            else {
+                bfs_adj[curr_edge.first.first.index][curr_edge.first.second.index].second = 1;
+                airports_visited.at(dest_airport.index).second = true;
+                for (unsigned i = 0; i < dest_airport.connected.size(); i++) {
+                    std::pair<airport, airport> route = std::make_pair(dest_airport,dest_airport.connected[i].first);
+                    std::pair<std::pair<airport, airport>, int> edge = std::make_pair(route, 0);
+                    visited.push(edge);
+                }
+            }
+        }
+    }
+
+    if (visited.empty()) return -1;
+    return backTrack(start, dest, bfs_adj);
+
 
 }
 
+double Graph::backTrack(airport start, airport dest, std::vector<std::vector<std::pair<double,int>>> bfs_adj) {
+    double total_distance = 0.0;
+    while (start.code != dest.code) {
+        for (unsigned i = 0; i < bfs_adj.size(); i++) {
+            if (bfs_adj[dest.index][i].second == 1) {
+                total_distance += bfs_adj[dest.index][i].first;
+                dest = airports.at(i);
+            }
+        }
+    }
+    return total_distance;
+}
+
+
+
+/**
+ * 1) If an edge is already marked 1 or 2, then don't add it to the queue
+    - bfs_adj[edge.first.first.index][edge.first.second.index].second == 0 or 1 or 2
+        - bfs_adj's Row x Col --> cell that has (double, int) --> (distance, status of edge 0,1,2)
+    - If == 1 or 2, skip
+ * 2) If the node that this edge connects to is 
+ * .   a) Visited: Mark this edge as cross
+            - If airports_visited.at(destination_airport.index).second = true
+            - bfs_adj[edge.first.first.index][edge.first.second.index].second == 2
+ *     b) Not Visited: Mark this edge as discovery, Mark this node as visited, add destination airport to queue, redo process for this node
+            - If airports_visited.at(destination_airport.index).second = false
+            - bfs_adj[edge.first.first.index][edge.first.second.index].second == 1
+            - airports_visited.at(destination_airport.index).second = true
+            - Make the route, make <route,status>, add this edge to queue
+ */
+
+
+
+
 //@TODO - AFTER BFS IMPLEMENTING
 double Graph::getDistance(std::string airport_one, std::string airport_two) {
-    airport airport_1 = convertCodeToAirport(airport_one);
-    airport airport_2 = convertCodeToAirport(airport_two);
-    if (adj_.at(airport_1.index).at(airport_2.index) != 0.0) return calcEdgeDistance(airport_one, airport_two);
-    // CALL BFS
+    airport ap_start = convertCodeToAirport(airport_one);
+    airport ap_dest = convertCodeToAirport(airport_two);
+    if (adj_.at(ap_start.index).at(ap_dest.index) != 0.0) return calcEdgeDistance(airport_one, airport_two);
+    
+    return BFS(ap_start, ap_dest);
 }
 
 double Graph::calcEdgeDistance(std::string airport_one, std::string airport_two) {
