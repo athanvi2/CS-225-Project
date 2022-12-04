@@ -32,10 +32,12 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
 
 }
 
+//@TODO - AFTER BFS IMPLEMENTING
 double Graph::getDistance(std::string airport_one, std::string airport_two) {
-    (void) airport_one;
-    (void) airport_two;
-    return 0;
+    airport airport_1 = convertCodeToAirport(airport_one);
+    airport airport_2 = convertCodeToAirport(airport_two);
+    if (adj_.at(airport_1.index).at(airport_2.index) != 0.0) return calcEdgeDistance(airport_one, airport_two);
+    // CALL BFS
 }
 
 double Graph::calcEdgeDistance(std::string airport_one, std::string airport_two) {
