@@ -1,0 +1,12 @@
+﻿1,Source Airport,Destination Airport
+1,KAT,ABS
+1,KAT,IBS
+1,KAT,IDS
+1,IDS,ZU
+1,IDS,ABS
+1,IDS,HAM
+1,ZU,HAM
+1,HAM,FIZ
+1,FIZ,IBS
+1,IBS,MAZ
+1,ZAH,AMU
