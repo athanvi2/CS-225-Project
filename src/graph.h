@@ -2,11 +2,8 @@
 #include "utils.h"
 #include "airport.h"
 
-// pointers need constructors and destructors
-
 class Graph {
     public:
-
         /**
          * @param airport_csv file containing aiports
          * @param routes_csv file containing routes between airports
@@ -27,7 +24,6 @@ class Graph {
          * @returns distance between two airports, only works with airports that are directly connected
         */
         double calcEdgeDistance(std::string airport_one, std::string airport_two);
-        double toRadians(const long double degree);
 
         /**
          * @param curr_airport airport to get all the connected airports for
@@ -58,18 +54,31 @@ class Graph {
         */
         airport convertCodeToAirport(std::string airport_code);
 
-        
+        /**
+         * @brief The BFS queue takes edges, but ensures no cycles or repeated edges by 
+         *        marking nodes as visited or not. Each edge is marked as either 0 or 1
+         *        with direction mattering. This way we can properly backtrack by following
+         *        which nodes we came from
+         * 
+         * @param start Starting airport
+         * @param dest Airport we want to reach to
+         * @returns shortest path in *steps* to the dest
+        */
         double BFS(airport start, airport dest);
 
+
+        /**
+         * @param start Starting airport
+         * @param dest Airport we want to reach to
+         * @param bfs_adj adj matrix that additionally stores the status of each edge
+         * 
+         * @returns the total distance by backtracking from dest to start
+        */
         double backTrack(airport start, airport dest, std::vector<std::vector<std::pair<double,int>>> bfs_adj);
-
-        std::vector<airport> airports;
-
-        std::vector<std::vector<double>> adj_;
 
     private:
         /* Vector of all vertices */ 
-        
+        std::vector<airport> airports;
         /* Vector of all edges */
         std::vector<std::pair<airport, airport>> routes;
         /* 
@@ -78,19 +87,13 @@ class Graph {
          * get the airport by comparing the code given to existing airports, then search
          * adj_[airport_one.index][airport_two.index]
          */
+        std::vector<std::vector<double>> adj_;
 
-         /* Any change to an aiport in airports vector does not make the airport in routes vector change or vice versa */
+         /**
+          * @note change to an aiport in airports vector does not make the airport in routes vector change or vice versa
+          *       To resolve this, whenever accessing an airport, access it by getting the airport directly from the 
+          *       airports vector
+          */
         
         
 };
-
-// airports --> airport everything except connected
-// adj --> 
-
-
-
-/*
-1) Shortest distance between two airports
-2) a) If directly connected, compute distance
-   b) BFS
-*/

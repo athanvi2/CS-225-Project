@@ -5,8 +5,8 @@ int main() {
 	Graph g("data_cleaning/airports_friends.csv", "data_cleaning/route_friends_wo_duplicates.csv"); 
 	std::cout << g.getDistance("KAT", "FIZ") << std::endl;
 
-	Graph g2("data_cleaning/clean_airports.csv", "data_cleaning/clean_routes.csv");
-	std::cout << g.getDistance("ORD", "HDD") << std::endl;
+	// Graph g2("data_cleaning/clean_airports.csv", "data_cleaning/clean_routes.csv");
+	// std::cout << g2.getDistance("AUS", "LHR") << std::endl;
 
 	
 	// for (auto e : g.airports.at(0).connected) {
