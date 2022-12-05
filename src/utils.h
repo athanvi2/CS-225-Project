@@ -11,6 +11,8 @@
 #include <unordered_map>
 #include <cmath>
 #include <queue>
+#include <stdio.h>
+#include <ctype.h>
 
 std::vector<std::string> GetSubstrs(const std::string& str, char delimiter);
 

@@ -2,6 +2,8 @@
 #include "utils.h"
 #include "airport.h"
 
+// pointers need constructors and destructors
+
 class Graph {
     public:
 
@@ -25,7 +27,8 @@ class Graph {
          * @returns distance between two airports, only works with airports that are directly connected
         */
         double calcEdgeDistance(std::string airport_one, std::string airport_two);
-        
+        double toRadians(const long double degree);
+
         /**
          * @param curr_airport airport to get all the connected airports for
          * @returns vector of pairs, each pair has the airport struct that it is connected to and then double as
@@ -75,14 +78,19 @@ class Graph {
          * get the airport by comparing the code given to existing airports, then search
          * adj_[airport_one.index][airport_two.index]
          */
+
+         /* Any change to an aiport in airports vector does not make the airport in routes vector change or vice versa */
         
         
 };
+
+// airports --> airport everything except connected
+// adj --> 
+
 
 
 /*
 1) Shortest distance between two airports
 2) a) If directly connected, compute distance
    b) BFS
-
 */

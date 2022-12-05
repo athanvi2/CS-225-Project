@@ -24,7 +24,19 @@ std::vector<std::vector<std::string>> CsvTwoD(const std::string& file) {
   std::getline(ifs, line);
   for (std::string line; std::getline(ifs, line); line = "") {
     std::vector<std::string> temp = GetSubstrs(line, ',');
+    // Remove last character if new line
+    std::string last_word = temp.at(temp.size() - 1);
+    if (!isalnum(last_word.at(last_word.size() - 1))) last_word.pop_back();
+    temp.at(temp.size() - 1) = last_word;
     csv.push_back(temp);
   }
+
+// for (unsigned i = 0; i < csv.size(); i++) {
+//     for (unsigned j = 0; j < csv[i].size(); j++) {
+//         std::cout << "   " << csv[i][j] << "    ";
+//     }
+//     std::cout << " "<< std::endl;
+// }
+
   return csv;
 }
