@@ -3,7 +3,8 @@
 
 int main() {
 	Graph g("data_cleaning/airports_friends.csv", "data_cleaning/route_friends_wo_duplicates.csv"); 
-	std::cout << g.getDistance("KAT", "FIZ") << std::endl;
+	// std::cout << g.getDistance("KAT", "FIZ") << std::endl;
+	std::cout << g.Dijkstra(g.convertCodeToAirport("KAT"), g.convertCodeToAirport("ZU")) << std::endl;
 
 	// Graph g2("data_cleaning/clean_airports.csv", "data_cleaning/clean_routes.csv");
 	// std::cout << g2.getDistance("AUS", "LHR") << std::endl;

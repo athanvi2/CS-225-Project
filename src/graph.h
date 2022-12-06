@@ -66,6 +66,15 @@ class Graph {
         */
         double BFS(airport start, airport dest);
 
+        /**
+         * @brief 
+         * 
+         * @param start Starting airport
+         * @param dest Airport we want to reach to
+         * @returns shortest path in *distance* to the dest
+        */
+       double Dijkstra(airport start, airport dest);
+
 
         /**
          * @param start Starting airport

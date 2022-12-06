@@ -85,6 +85,120 @@ double Graph::BFS(airport start, airport dest) {
     return backTrack(start, dest, bfs_adj);
 }
 
+
+double Graph::Dijkstra(airport start, airport dest) {
+
+     // will store distance, current airport, previous airport
+     std::vector<std::pair<double, std::pair<airport, airport>>> queue;
+     // visited vector
+     std::vector<bool> airports_visited;
+     airports_visited.resize(airports.size(), false);
+
+
+     int count = 0;
+     airports_visited.at(start.index) = true;
+
+     airport temp_null;
+     queue.push_back(std::make_pair(0, std::make_pair(start, temp_null)));
+     std::pair<double, std::pair<airport, airport>> minimum = queue[0];
+     int index = 0;
+
+
+     while (!queue.empty()) {
+        if (queue.size() > 10) {
+        return 5.0;
+     }
+        // check queue for minimum distance, set minimum, remove minimum from the queue
+        for (unsigned i = 0; i < queue.size(); i++) {
+            // std::cout << minimum.first << " > " << queue[i].first << std::endl;
+            if (minimum.first > queue[i].first) {
+                minimum = queue[i];
+              //  std::cout << "new min: " << " = " << queue[i].first << "index: " << i << std::endl;
+                index  = i;
+                
+            }
+        }
+        queue.erase(queue.begin()+index);
+
+        // if minimum = destination
+        // exit while loop if destination is reached 
+        if (minimum.second.first.code == dest.code) {
+            return minimum.first;
+        }
+
+        if (std::find(airports_visited.begin(), airports_visited.end(), false) == airports_visited.end()) {
+            for (unsigned i = 0; i < queue.size(); i++) {
+                if (queue[i].second.first.code == dest.code) return queue[i].first;
+            }
+        }
+    
+        // check connected nodes
+        for (unsigned i = 0; i < minimum.second.first.connected.size(); i++) {
+            // std::cout << minimum.second.first.code << std::endl;
+            // std::cout << minimum.second.first.connected.size() << std::endl;
+
+
+            // std::cout << "Connected" << std::endl;
+            // for (unsigned i = 0; i < minimum.second.first.connected.size(); i++) {
+            //     std::cout << minimum.second.first.connected[i].first.code << std::endl;
+
+            // }
+            // iff current node's connected is not a previous node
+            if (minimum.second.first.connected[i].first.code == minimum.second.second.code) {
+                continue;
+            } else {
+                airport curr_ap = airports.at(minimum.second.first.connected[i].first.index);
+                std::pair<airport, airport> pair = std::make_pair(curr_ap, minimum.second.first);
+                // add connected edge distance to cumulative distance
+                double dist = minimum.second.first.connected[i].second + minimum.first;
+                std::pair<double, std::pair<airport, airport>> insert = std::make_pair(dist, pair);
+                std::cout << "insert " << insert.first <<  " " <<insert.second.first.code << " " << insert.second.second.code << std::endl;
+                queue.push_back(insert);
+                airports_visited.at(curr_ap.index) = true;
+            }
+  
+        }
+        minimum.first = 100000000.0;
+
+    
+        // check if destiniation is a current airport in vector twice (more than once), remove occurance with highest distance
+        std::vector<int> check;
+        for (unsigned i = 0; i < queue.size(); i++) {
+            if (queue[i].second.first.code == dest.code) {
+                check.push_back(i);
+            }
+        }
+        if (check.size() > 1) {
+            if (queue[check[0]].first > queue[check[1]].first) {
+                queue.erase(queue.begin()+check[0]);
+            } else {
+                queue.erase(queue.begin()+check[1]);
+            }
+        } 
+        check.clear();
+
+        
+        count++;
+        std::cout << "Queue #"<< count << std::endl;
+        for (unsigned i = 0; i < queue.size(); i++) {
+            std::cout << "distance "<< queue[i].first << " current: "<< queue.at(i).second.first.code << " previous: "<<queue.at(i).second.second.code << std::endl;
+            
+        }
+
+        
+     }
+     return -1;
+
+
+    /**
+     * 1.) Set start node equal to 0. Set rest of node's weights equal to infinity.
+     * 2.) Add start to labeled set. Check connected set of nodes, update weights, update visited
+     * 3.) Choose single lowest weight vertex not in the set, 
+     * 
+     */
+    
+}
+
 double Graph::backTrack(airport start, airport dest, std::vector<std::vector<std::pair<double,int>>> bfs_adj) {
     double total_distance = 0.0;
     while (start.code != dest.code) {
