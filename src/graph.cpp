@@ -37,9 +37,9 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
     }
 }
 
+/* BFS ALgorithm */
 double Graph::BFS(airport start, airport dest) {
     std::queue<std::pair<airport, airport>> visited;
-
     // Resize and populate visited nodes
     std::vector<std::pair<airport, bool>> airports_visited;
     // 0 - not visited, 1 - discovery, 2 - cross 
@@ -55,7 +55,6 @@ double Graph::BFS(airport start, airport dest) {
             bfs_adj[row][col] = std::make_pair(adj_[row][col], 0);
         }
     }
-
     // Populating bfs_adj
     airports_visited.at(start.index).second = true;
     for (unsigned i = 0; i < start.connected.size(); i++) {
@@ -79,7 +78,6 @@ double Graph::BFS(airport start, airport dest) {
             }
         }
     }
-
     // Calc distance 
     if (visited.empty()) return -1;
     return backTrack(start, dest, bfs_adj);
@@ -98,30 +96,75 @@ double Graph::backTrack(airport start, airport dest, std::vector<std::vector<std
     return total_distance;
 }
 
+/* Dijkstra's Algorithm */
+double Graph::Dijkstra(airport start, airport dest) {
+    // will store distance, current airport, previous airport
+    std::vector<std::pair<double, std::pair<airport, airport>>> queue;
+    // current spot on the queue
+    std::pair<double, std::pair<airport, airport>> minimum;
+    int index = 0;
+    airport temp;
 
+    // populate the queue
+    for (unsigned i = 0; i < airports.size(); i++) {
+        if (airports[i].code == start.code) {
+            queue.push_back(std::make_pair(0, std::make_pair(airports[i], temp)));
+            minimum = queue[i];
+        } else {
+            queue.push_back(std::make_pair(INT_MAX, std::make_pair(airports[i], temp)));
+        }
+    }
 
-/**
- * 1) If an edge is already marked 1 or 2, then don't add it to the queue
-    - bfs_adj[edge.first.first.index][edge.first.second.index].second == 0 or 1 or 2
-        - bfs_adj's Row x Col --> cell that has (double, int) --> (distance, status of edge 0,1,2)
-    - If == 1 or 2, skip
- * 2) If the node that this edge connects to is 
- * .   a) Visited: Mark this edge as cross
-            - If airports_visited.at(destination_airport.index).second = true
-            - bfs_adj[edge.first.first.index][edge.first.second.index].second == 2
- *     b) Not Visited: Mark this edge as discovery, Mark this node as visited, add destination airport to queue, redo process for this node
-            - If airports_visited.at(destination_airport.index).second = false
-            - bfs_adj[edge.first.first.index][edge.first.second.index].second == 1
-            - airports_visited.at(destination_airport.index).second = true
-            - Make the route, make <route,status>, add this edge to queue
- */
+    while (!queue.empty()) {
+        // search for minimum distance on the queue
+        for (unsigned i = 0; i < queue.size(); i++) {
+            if (minimum.first >= queue[i].first) {
+                minimum = queue[i];
+                index = i;
+            }
+        }
+        // remove minimum distance from the queue
+        queue.erase(queue.begin()+index);
+        // if minimum distance is the destination, returns shortest distance
+        if (minimum.second.first.code == dest.code) {
+            if (minimum.first == INT_MAX) {
+                return -1;
+            }
+            return minimum.first;
+        }
+        // updates queue distances with shortest path (in terms of distance) for each node
+        for (unsigned i = 0; i < minimum.second.first.connected.size(); i++) {
+            if (minimum.second.first.connected[i].first.code != minimum.second.second.code) {
+                airport curr_ap = airports.at(minimum.second.first.connected[i].first.index);
+                for (unsigned j = 0; j < queue.size(); j++) {
+                    if (queue[j].second.first.code == curr_ap.code) {
+                        if (minimum.first  + minimum.second.first.connected[i].second < queue[j].first) {
+                            queue[j].first = minimum.first +  minimum.second.first.connected[i].second;
+                        }
+                    }
+                }
+            }
+        }
+        minimum.first = INT_MAX;
+    }
+    return -1;
+}
 
-double Graph::getDistance(std::string airport_one, std::string airport_two) {
+std::string Graph::getLeastStopsDistance(std::string airport_one, std::string airport_two) {
     airport ap_start = convertCodeToAirport(airport_one);
     airport ap_dest = convertCodeToAirport(airport_two);
 
-    if (adj_.at(ap_start.index).at(ap_dest.index) != 0.0) return calcEdgeDistance(airport_one, airport_two);
-    return BFS(ap_start, ap_dest);
+    if (adj_.at(ap_start.index).at(ap_dest.index) != 0.0) return "Distance from " + airport_one + " to " + airport_two 
+    + " based on least number of stops: " + std::to_string(calcEdgeDistance(airport_one, airport_two)) + " kilometers.";
+    return "Distance from " + airport_one + " to " + airport_two + " based on least number of stops: " + std::to_string(BFS(ap_start, ap_dest)) + " kilometers";
+}
+
+
+std::string Graph::getShortestDistance(std::string airport_one, std::string airport_two) {
+    airport ap_start = convertCodeToAirport(airport_one);
+    airport ap_dest = convertCodeToAirport(airport_two);
+
+    return "Distance from " + airport_one + " to " + airport_two + " based on shortest distance: " + std::to_string(Dijkstra(ap_start, ap_dest)) + " kilometers";
 }
 
 double Graph::calcEdgeDistance(std::string airport_one, std::string airport_two) {
@@ -158,10 +201,12 @@ airport Graph::createAirport(std::vector<std::string> line) {
 }
 
 airport Graph::convertCodeToAirport(std::string airport_code) {
-    airport ap = airports.at(0);
+    airport ap;
     for (unsigned i = 0; i < airports.size(); i++) {
-        if (airports.at(i).code == airport_code) ap = airports.at(i);
+        if (airports.at(i).code == airport_code) ap = airports.at(i); 
     }
+    // if (ap.code == "") throw std::invalid_argument("Invalid Airport Code");
+    
     return ap;
     
 }
