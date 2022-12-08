@@ -96,6 +96,9 @@ class Graph {
         */
         double Dijkstra(airport start, airport dest);
 
+        // Helper
+        std::vector<std::vector<double>> getAdj();
+
     private:
         /* Vector of all vertices */ 
         std::vector<airport> airports;

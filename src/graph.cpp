@@ -4,6 +4,7 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
     // reading into v2d
     std::vector<std::vector<std::string>> airports_vect = CsvTwoD(airport_csv);
     std::vector<std::vector<std::string>> routes_vect = CsvTwoD(routes_csv);
+    std::vector<std::vector<double>> connections;
 
     // populate airports
     for (unsigned i = 0; i < airports_vect.size(); i++) {
@@ -21,7 +22,10 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
 
     // resize adj_
     adj_.resize(airports.size());
+    connections.resize(adj_.size());
     for (unsigned i = 0; i < airports.size(); i++) adj_[i].resize(airports.size(),0.0);
+
+    for (unsigned i = 0; i < adj_.size(); i++) connections[i].resize(adj_.size(),0.0);
 
     // populate adj_ matrix with values
     for (unsigned i = 0; i < routes.size(); i++) {
@@ -35,6 +39,16 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
         airports.at(routes[i].first.index).connected.push_back(std::make_pair(routes[i].second, dist));
         airports.at(routes[i].second.index).connected.push_back(std::make_pair(routes[i].first, dist));
     }
+        
+        for (unsigned row = 0; row < adj_.size(); row++) {
+            for (unsigned col = 0; col < adj_.at(row).size(); col++) {
+                double cell = adj_.at(row).at(col);
+                if (cell != 0) connections.at(row).at(col) = 1.0;
+                else connections.at(row).at(col) = 0.0;
+                std::cout << connections[row][col] << " ";
+            }
+            std::cout << " ";
+        }
 }
 
 /* BFS ALgorithm */
@@ -209,4 +223,8 @@ airport Graph::convertCodeToAirport(std::string airport_code) {
     
     return ap;
     
+}
+
+std::vector<std::vector<double>> Graph::getAdj() {
+    return adj_;
 }
