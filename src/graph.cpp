@@ -1,10 +1,31 @@
 #include "graph.h"
 
+//Helper for pagerank adj
+std::vector<std::vector<double>> adjWithDamping(std::vector<std::vector<double>> connections, double damping_factor) {
+    double damping_factor_formula = (1 - damping_factor) / connections.size();
+
+    for (unsigned i = 0; i < connections.size(); i++) {
+        double sum = 0.0;
+        for (unsigned j = 0; j < connections[i].size(); j++) {
+            sum += connections[j][i];
+        }
+        if (sum == 0) {
+            for (unsigned k = 0; k < connections.size(); k++) {
+                connections[k][i] = 1/connections.size();
+            }
+        } else {
+            for (unsigned l = 0; l < connections.size(); l++) {
+                connections[l][i] = (connections[l][i] / sum) * damping_factor + damping_factor_formula;
+            }
+        }
+    }
+    return connections;
+}
+
 Graph::Graph(std::string airport_csv, std::string routes_csv) {
     // reading into v2d
     std::vector<std::vector<std::string>> airports_vect = CsvTwoD(airport_csv);
     std::vector<std::vector<std::string>> routes_vect = CsvTwoD(routes_csv);
-    std::vector<std::vector<double>> connections;
 
     // populate airports
     for (unsigned i = 0; i < airports_vect.size(); i++) {
@@ -39,16 +60,31 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
         airports.at(routes[i].first.index).connected.push_back(std::make_pair(routes[i].second, dist));
         airports.at(routes[i].second.index).connected.push_back(std::make_pair(routes[i].first, dist));
     }
-        
+        // generating pagerank adj matrix called connections
         for (unsigned row = 0; row < adj_.size(); row++) {
             for (unsigned col = 0; col < adj_.at(row).size(); col++) {
                 double cell = adj_.at(row).at(col);
                 if (cell != 0) connections.at(row).at(col) = 1.0;
                 else connections.at(row).at(col) = 0.0;
-                std::cout << connections[row][col] << " ";
             }
-            std::cout << " ";
         }
+    
+    pagerank_adj = adjWithDamping(connections, 0.85);
+
+    // for (auto x : connections) {
+    //     for (auto cell : x) {
+    //         std::cout << cell << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << "Page Rank Version MOFO: " << std::endl;
+
+    //    for (auto x : pagerank_adj) {
+    //     for (auto cell : x) {
+    //         std::cout << cell << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
 }
 
 /* BFS ALgorithm */
@@ -219,12 +255,63 @@ airport Graph::convertCodeToAirport(std::string airport_code) {
     for (unsigned i = 0; i < airports.size(); i++) {
         if (airports.at(i).code == airport_code) ap = airports.at(i); 
     }
-    // if (ap.code == "") throw std::invalid_argument("Invalid Airport Code");
-    
     return ap;
-    
 }
 
-std::vector<std::vector<double>> Graph::getAdj() {
-    return adj_;
+std::vector<double> Graph::PageRank(std::vector<std::vector<double>> pg_adj) {
+    int iterations = 300;
+    std::vector<double> init_guess(pg_adj.size(), 0);
+    generate(init_guess.begin(), init_guess.end(), rand);
+    
+    std::vector<double> result = init_guess;
+    std::vector<double> new_guess = init_guess;
+
+    for (int iter = 0; iter < iterations; iter++) {
+        for (unsigned i = 0; i < pg_adj.size(); i++) {
+            result[i] = 0;
+            for (unsigned j = 0; j < pg_adj[i].size(); j++) {
+                result[i] += pg_adj[i][j] * new_guess[j];
+            }
+        }
+        new_guess = result;
+    }
+    return new_guess;
 }
+
+std::vector<double> Graph::NormalizedPageRank(std::vector<double> new_guess) {
+    std::vector<double> normalized_pr = new_guess;
+    double norm = sqrt(inner_product(new_guess.begin(), new_guess.end(), new_guess.begin(), 0.0L));
+
+    for (unsigned i = 0; i < new_guess.size(); i++) {
+        normalized_pr[i] = new_guess[i] / norm;
+    }
+    return normalized_pr;
+}
+
+struct Compare {
+    bool operator()(std::pair<double,int> a, std::pair<double, int> b) {
+        return a.first < b.first;
+    }
+};
+
+std::vector<std::string> Graph::PageRankResult(std::vector<double> normalized_pr, int top_nums) {
+    std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, Compare> pq;
+
+    for (unsigned i = 0; i < normalized_pr.size(); i++) {
+        pq.push(std::make_pair(normalized_pr[i], i));
+    }
+    std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, Compare> printq;
+    while (!pq.empty()) {
+        std::cout << pq.top().first << " " << pq.top().second << std::endl;
+        printq.push(pq.top());
+        pq.pop();
+    }
+    std::vector<std::string> to_return;
+    for (int i = 0; i < top_nums; i++) {
+
+        to_return.push_back(airports[printq.top().second].name);
+        printq.pop();
+    }
+    return to_return;
+}
+
