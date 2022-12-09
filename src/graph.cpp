@@ -1,7 +1,7 @@
 #include "graph.h"
 
 //Helper for pagerank adj
-std::vector<std::vector<double>> adjWithDamping(std::vector<std::vector<double>> connections, double damping_factor) {
+std::vector<std::vector<double>> Graph::adjWithDamping(std::vector<std::vector<double>> connections, double damping_factor) {
     double damping_factor_formula = (1 - damping_factor) / connections.size();
 
     for (unsigned i = 0; i < connections.size(); i++) {
@@ -288,7 +288,6 @@ std::vector<std::string> Graph::PageRankResult(std::vector<double> normalized_pr
     }
     std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, Compare> printq;
     while (!pq.empty()) {
-        std::cout << pq.top().first << " " << pq.top().second << std::endl;
         printq.push(pq.top());
         pq.pop();
     }

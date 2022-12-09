@@ -20,35 +20,29 @@ int main() {
 	}
 
 
-	// // std::vector<std::vector<double>> test = g.adjWithDamping(g.connections, 0.85);
-	// for (auto i : rank) {
-	// 		std::cout << i << std::endl;
-	// }
+	std::vector<std::vector<double>> test = g.adjWithDamping(g.connections, 0.85);
+	
+	std::cout << g.getLeastStopsDistance("KAT", "FIZ") << std::endl;
+	std::cout << g.getShortestDistance("KAT", "FIZ") << std::endl;
 
-	// std::cout << g.getLeastStopsDistance("KAT", "FIZ") << std::endl;
-	// std::cout << g.getShortestDistance("KAT", "FIZ") << std::endl;
+	//JFK,EZE directly connected
+	Graph g2("../clean_airports.csv", "../clean_routes.csv");
 
-	// JFK,EZE directly connected
-	//Graph g2("data_cleaning/clean_airports.csv", "data_cleaning/clean_routes.csv");
+	std::vector<double> res2 = g2.PageRank(g2.pagerank_adj);
+	std::vector<double> norm2 = g2.NormalizedPageRank(res2);
+	for (unsigned i = 0; i < norm2.size(); i++) {
+		std::cout << norm2[i] << std::endl;
+	}
+	std::cout << "WE GUCCI!!!" << std::endl;
 
-	// std::vector<double> res = g2.PageRank(g2.pagerank_adj);
-	// std::vector<double> norm = g2.NormalizedPageRank(res);
-	// for (unsigned i = 0; i < norm.size(); i++) {
-	// 	std::cout << norm[i] << std::endl;
-	// }
-	// std::cout << "WE GUCCI!!!" << std::endl;
-
-	// std::vector<std::string> top_airports = g2.PageRankResult(norm, 10);
-	// std::cout << "WE GUCCI!!!" << std::endl;
-	// std::cout << "WE GUCCI!!!" << std::endl;
-	// std::cout << "WE GUCCI!!!" << std::endl;
-	// for (auto i : top_airports) {
-	// 	std::cout << i << std::endl;
-	// }
+	std::vector<std::string> top_airports2 = g2.PageRankResult(norm2, 10);
+	std::cout << "WE GUCCI!!!" << std::endl;
+	std::cout << "WE GUCCI!!!" << std::endl;
+	std::cout << "WE GUCCI!!!" << std::endl;
 
 
-	//std::cout << g2.getLeastStopsDistance("JFK", "EZE") << std::endl;
-	//std::cout << g2.getShortestDistance("JFK", "EZE") << std::endl;
+	std::cout << g2.getLeastStopsDistance("JFK", "EZE") << std::endl;
+	std::cout << g2.getShortestDistance("JFK", "EZE") << std::endl;
 
 	
 	// for (auto e : g.airports.at(0).connected) {

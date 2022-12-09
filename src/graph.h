@@ -96,9 +96,11 @@ class Graph {
         */
         double Dijkstra(airport start, airport dest);
 
+        std::vector<std::vector<double>> adjWithDamping(std::vector<std::vector<double>> connections, double damping_factor);
+
         std::vector<double> PageRank(std::vector<std::vector<double>> pg_adj);
 
-       //std::vector<std::vector<double>> connections;
+        std::vector<std::vector<double>> connections;
 
         std::vector<std::vector<double>> pagerank_adj;
 
@@ -119,7 +121,7 @@ class Graph {
          */
         std::vector<std::vector<double>> adj_;
 
-        std::vector<std::vector<double>> connections;
+        
 
          /**
           * @note change to an aiport in airports vector does not make the airport in routes vector change or vice versa
