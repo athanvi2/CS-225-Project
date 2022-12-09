@@ -13,6 +13,11 @@
 #include <queue>
 #include <stdio.h>
 #include <ctype.h>
+#include <stdexcept>
+#include <limits.h>
+#include <stdio.h>
+#include <numeric>
+#include <algorithm>
 
 std::vector<std::string> GetSubstrs(const std::string& str, char delimiter);
 

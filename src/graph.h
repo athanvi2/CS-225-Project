@@ -14,9 +14,16 @@ class Graph {
         /**
          * @param airport_one code for airport
          * @param airport_two code for airport
-         * @returns distance, even if indirect will use BFS to determine shortest path
+         * @returns distance, even if indirect will use BFS algorithm to determine shortest path based on least number of steps.
         */
-        double getDistance(std::string airport_one, std::string airport_two);
+        std::string getLeastStopsDistance(std::string airport_one, std::string airport_two);
+
+        /**
+         * @param airport_one code for airport
+         * @param airport_two code for airport
+         * @returns distance, even if indirect will use Dijkstra's algorithm to determine shortest path based on shortest distance.
+        */
+        std::string getShortestDistance(std::string airport_one, std::string airport_two);
 
         /**
          * @param airport_one
@@ -62,18 +69,9 @@ class Graph {
          * 
          * @param start Starting airport
          * @param dest Airport we want to reach to
-         * @returns shortest path in *steps* to the dest
+         * @returns distance based on smallest number of steps from start to dest
         */
         double BFS(airport start, airport dest);
-
-        /**
-         * @brief 
-         * 
-         * @param start Starting airport
-         * @param dest Airport we want to reach to
-         * @returns shortest path in *distance* to the dest
-        */
-       double Dijkstra(airport start, airport dest);
 
 
         /**
@@ -84,6 +82,29 @@ class Graph {
          * @returns the total distance by backtracking from dest to start
         */
         double backTrack(airport start, airport dest, std::vector<std::vector<std::pair<double,int>>> bfs_adj);
+
+        /**
+         * @brief The Dijkstra's algorithm implements a priority queue that will update
+         * each node in the graph's distance from the start, ensuring no cycles or repeated
+         * edges occur by marking the previous node of the current node. The queue will ensure
+         * the distance from start to destination is the shortest numerical distance in kilometers.
+         * 
+         * 
+         * @param start Starting airport
+         * @param dest Airport we want to reach to
+         * @returns  distance based on shortest distance from start to dest
+        */
+        double Dijkstra(airport start, airport dest);
+
+        std::vector<double> PageRank(std::vector<std::vector<double>> pg_adj);
+
+        std::vector<std::vector<double>> connections;
+
+        std::vector<std::vector<double>> pagerank_adj;
+
+        std::vector<double> NormalizedPageRank(std::vector<double> new_guess);
+
+        std::vector<std::string> PageRankResult(std::vector<double> normalized_pr, int top_nums);
 
     private:
         /* Vector of all vertices */ 
@@ -97,6 +118,8 @@ class Graph {
          * adj_[airport_one.index][airport_two.index]
          */
         std::vector<std::vector<double>> adj_;
+
+        // std::vector<std::vector<double>> connections;
 
          /**
           * @note change to an aiport in airports vector does not make the airport in routes vector change or vice versa

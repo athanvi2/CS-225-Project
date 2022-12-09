@@ -1,5 +1,27 @@
 #include "graph.h"
 
+//Helper for pagerank adj
+std::vector<std::vector<double>> adjWithDamping(std::vector<std::vector<double>> connections, double damping_factor) {
+    double damping_factor_formula = (1 - damping_factor) / connections.size();
+
+    for (unsigned i = 0; i < connections.size(); i++) {
+        double sum = 0.0;
+        for (unsigned j = 0; j < connections[i].size(); j++) {
+            sum += connections[j][i];
+        }
+        if (sum == 0) {
+            for (unsigned k = 0; k < connections.size(); k++) {
+                connections[k][i] = 1/connections.size();
+            }
+        } else {
+            for (unsigned l = 0; l < connections.size(); l++) {
+                connections[l][i] = (connections[l][i] / sum) * damping_factor + damping_factor_formula;
+            }
+        }
+    }
+    return connections;
+}
+
 Graph::Graph(std::string airport_csv, std::string routes_csv) {
     // reading into v2d
     std::vector<std::vector<std::string>> airports_vect = CsvTwoD(airport_csv);
@@ -21,7 +43,10 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
 
     // resize adj_
     adj_.resize(airports.size());
+    connections.resize(adj_.size());
     for (unsigned i = 0; i < airports.size(); i++) adj_[i].resize(airports.size(),0.0);
+
+    for (unsigned i = 0; i < adj_.size(); i++) connections[i].resize(adj_.size(),0.0);
 
     // populate adj_ matrix with values
     for (unsigned i = 0; i < routes.size(); i++) {
@@ -35,11 +60,36 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
         airports.at(routes[i].first.index).connected.push_back(std::make_pair(routes[i].second, dist));
         airports.at(routes[i].second.index).connected.push_back(std::make_pair(routes[i].first, dist));
     }
+        // generating pagerank adj matrix called connections
+        for (unsigned row = 0; row < adj_.size(); row++) {
+            for (unsigned col = 0; col < adj_.at(row).size(); col++) {
+                double cell = adj_.at(row).at(col);
+                if (cell != 0) connections.at(row).at(col) = 1.0;
+                else connections.at(row).at(col) = 0.0;
+            }
+        }
+    
+    pagerank_adj = adjWithDamping(connections, 0.85);
+
+    // for (auto x : connections) {
+    //     for (auto cell : x) {
+    //         std::cout << cell << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << "Page Rank Version MOFO: " << std::endl;
+
+    //    for (auto x : pagerank_adj) {
+    //     for (auto cell : x) {
+    //         std::cout << cell << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
 }
 
+/* BFS ALgorithm */
 double Graph::BFS(airport start, airport dest) {
     std::queue<std::pair<airport, airport>> visited;
-
     // Resize and populate visited nodes
     std::vector<std::pair<airport, bool>> airports_visited;
     // 0 - not visited, 1 - discovery, 2 - cross 
@@ -55,7 +105,6 @@ double Graph::BFS(airport start, airport dest) {
             bfs_adj[row][col] = std::make_pair(adj_[row][col], 0);
         }
     }
-
     // Populating bfs_adj
     airports_visited.at(start.index).second = true;
     for (unsigned i = 0; i < start.connected.size(); i++) {
@@ -79,124 +128,9 @@ double Graph::BFS(airport start, airport dest) {
             }
         }
     }
-
     // Calc distance 
     if (visited.empty()) return -1;
     return backTrack(start, dest, bfs_adj);
-}
-
-
-double Graph::Dijkstra(airport start, airport dest) {
-
-     // will store distance, current airport, previous airport
-     std::vector<std::pair<double, std::pair<airport, airport>>> queue;
-     // visited vector
-     std::vector<bool> airports_visited;
-     airports_visited.resize(airports.size(), false);
-
-
-     int count = 0;
-     airports_visited.at(start.index) = true;
-
-     airport temp_null;
-     queue.push_back(std::make_pair(0, std::make_pair(start, temp_null)));
-     std::pair<double, std::pair<airport, airport>> minimum = queue[0];
-     int index = 0;
-
-
-     while (!queue.empty()) {
-        if (queue.size() > 10) {
-        return 5.0;
-     }
-        // check queue for minimum distance, set minimum, remove minimum from the queue
-        for (unsigned i = 0; i < queue.size(); i++) {
-            // std::cout << minimum.first << " > " << queue[i].first << std::endl;
-            if (minimum.first > queue[i].first) {
-                minimum = queue[i];
-              //  std::cout << "new min: " << " = " << queue[i].first << "index: " << i << std::endl;
-                index  = i;
-                
-            }
-        }
-        queue.erase(queue.begin()+index);
-
-        // if minimum = destination
-        // exit while loop if destination is reached 
-        if (minimum.second.first.code == dest.code) {
-            return minimum.first;
-        }
-
-        if (std::find(airports_visited.begin(), airports_visited.end(), false) == airports_visited.end()) {
-            for (unsigned i = 0; i < queue.size(); i++) {
-                if (queue[i].second.first.code == dest.code) return queue[i].first;
-            }
-        }
-    
-        // check connected nodes
-        for (unsigned i = 0; i < minimum.second.first.connected.size(); i++) {
-            // std::cout << minimum.second.first.code << std::endl;
-            // std::cout << minimum.second.first.connected.size() << std::endl;
-
-
-            // std::cout << "Connected" << std::endl;
-            // for (unsigned i = 0; i < minimum.second.first.connected.size(); i++) {
-            //     std::cout << minimum.second.first.connected[i].first.code << std::endl;
-
-            // }
-            // iff current node's connected is not a previous node
-            if (minimum.second.first.connected[i].first.code == minimum.second.second.code) {
-                continue;
-            } else {
-                airport curr_ap = airports.at(minimum.second.first.connected[i].first.index);
-                std::pair<airport, airport> pair = std::make_pair(curr_ap, minimum.second.first);
-                // add connected edge distance to cumulative distance
-                double dist = minimum.second.first.connected[i].second + minimum.first;
-                std::pair<double, std::pair<airport, airport>> insert = std::make_pair(dist, pair);
-                std::cout << "insert " << insert.first <<  " " <<insert.second.first.code << " " << insert.second.second.code << std::endl;
-                queue.push_back(insert);
-                airports_visited.at(curr_ap.index) = true;
-            }
-  
-        }
-        minimum.first = 100000000.0;
-
-    
-        // check if destiniation is a current airport in vector twice (more than once), remove occurance with highest distance
-        std::vector<int> check;
-        for (unsigned i = 0; i < queue.size(); i++) {
-            if (queue[i].second.first.code == dest.code) {
-                check.push_back(i);
-            }
-        }
-        if (check.size() > 1) {
-            if (queue[check[0]].first > queue[check[1]].first) {
-                queue.erase(queue.begin()+check[0]);
-            } else {
-                queue.erase(queue.begin()+check[1]);
-            }
-        } 
-        check.clear();
-
-        
-        count++;
-        std::cout << "Queue #"<< count << std::endl;
-        for (unsigned i = 0; i < queue.size(); i++) {
-            std::cout << "distance "<< queue[i].first << " current: "<< queue.at(i).second.first.code << " previous: "<<queue.at(i).second.second.code << std::endl;
-            
-        }
-
-        
-     }
-     return -1;
-
-
-    /**
-     * 1.) Set start node equal to 0. Set rest of node's weights equal to infinity.
-     * 2.) Add start to labeled set. Check connected set of nodes, update weights, update visited
-     * 3.) Choose single lowest weight vertex not in the set, 
-     * 
-     */
-    
 }
 
 double Graph::backTrack(airport start, airport dest, std::vector<std::vector<std::pair<double,int>>> bfs_adj) {
@@ -212,30 +146,75 @@ double Graph::backTrack(airport start, airport dest, std::vector<std::vector<std
     return total_distance;
 }
 
+/* Dijkstra's Algorithm */
+double Graph::Dijkstra(airport start, airport dest) {
+    // will store distance, current airport, previous airport
+    std::vector<std::pair<double, std::pair<airport, airport>>> queue;
+    // current spot on the queue
+    std::pair<double, std::pair<airport, airport>> minimum;
+    int index = 0;
+    airport temp;
 
+    // populate the queue
+    for (unsigned i = 0; i < airports.size(); i++) {
+        if (airports[i].code == start.code) {
+            queue.push_back(std::make_pair(0, std::make_pair(airports[i], temp)));
+            minimum = queue[i];
+        } else {
+            queue.push_back(std::make_pair(INT_MAX, std::make_pair(airports[i], temp)));
+        }
+    }
 
-/**
- * 1) If an edge is already marked 1 or 2, then don't add it to the queue
-    - bfs_adj[edge.first.first.index][edge.first.second.index].second == 0 or 1 or 2
-        - bfs_adj's Row x Col --> cell that has (double, int) --> (distance, status of edge 0,1,2)
-    - If == 1 or 2, skip
- * 2) If the node that this edge connects to is 
- * .   a) Visited: Mark this edge as cross
-            - If airports_visited.at(destination_airport.index).second = true
-            - bfs_adj[edge.first.first.index][edge.first.second.index].second == 2
- *     b) Not Visited: Mark this edge as discovery, Mark this node as visited, add destination airport to queue, redo process for this node
-            - If airports_visited.at(destination_airport.index).second = false
-            - bfs_adj[edge.first.first.index][edge.first.second.index].second == 1
-            - airports_visited.at(destination_airport.index).second = true
-            - Make the route, make <route,status>, add this edge to queue
- */
+    while (!queue.empty()) {
+        // search for minimum distance on the queue
+        for (unsigned i = 0; i < queue.size(); i++) {
+            if (minimum.first >= queue[i].first) {
+                minimum = queue[i];
+                index = i;
+            }
+        }
+        // remove minimum distance from the queue
+        queue.erase(queue.begin()+index);
+        // if minimum distance is the destination, returns shortest distance
+        if (minimum.second.first.code == dest.code) {
+            if (minimum.first == INT_MAX) {
+                return -1;
+            }
+            return minimum.first;
+        }
+        // updates queue distances with shortest path (in terms of distance) for each node
+        for (unsigned i = 0; i < minimum.second.first.connected.size(); i++) {
+            if (minimum.second.first.connected[i].first.code != minimum.second.second.code) {
+                airport curr_ap = airports.at(minimum.second.first.connected[i].first.index);
+                for (unsigned j = 0; j < queue.size(); j++) {
+                    if (queue[j].second.first.code == curr_ap.code) {
+                        if (minimum.first  + minimum.second.first.connected[i].second < queue[j].first) {
+                            queue[j].first = minimum.first +  minimum.second.first.connected[i].second;
+                        }
+                    }
+                }
+            }
+        }
+        minimum.first = INT_MAX;
+    }
+    return -1;
+}
 
-double Graph::getDistance(std::string airport_one, std::string airport_two) {
+std::string Graph::getLeastStopsDistance(std::string airport_one, std::string airport_two) {
     airport ap_start = convertCodeToAirport(airport_one);
     airport ap_dest = convertCodeToAirport(airport_two);
 
-    if (adj_.at(ap_start.index).at(ap_dest.index) != 0.0) return calcEdgeDistance(airport_one, airport_two);
-    return BFS(ap_start, ap_dest);
+    if (adj_.at(ap_start.index).at(ap_dest.index) != 0.0) return "Distance from " + airport_one + " to " + airport_two 
+    + " based on least number of stops: " + std::to_string(calcEdgeDistance(airport_one, airport_two)) + " kilometers.";
+    return "Distance from " + airport_one + " to " + airport_two + " based on least number of stops: " + std::to_string(BFS(ap_start, ap_dest)) + " kilometers";
+}
+
+
+std::string Graph::getShortestDistance(std::string airport_one, std::string airport_two) {
+    airport ap_start = convertCodeToAirport(airport_one);
+    airport ap_dest = convertCodeToAirport(airport_two);
+
+    return "Distance from " + airport_one + " to " + airport_two + " based on shortest distance: " + std::to_string(Dijkstra(ap_start, ap_dest)) + " kilometers";
 }
 
 double Graph::calcEdgeDistance(std::string airport_one, std::string airport_two) {
@@ -272,10 +251,66 @@ airport Graph::createAirport(std::vector<std::string> line) {
 }
 
 airport Graph::convertCodeToAirport(std::string airport_code) {
-    airport ap = airports.at(0);
+    airport ap;
     for (unsigned i = 0; i < airports.size(); i++) {
-        if (airports.at(i).code == airport_code) ap = airports.at(i);
+        if (airports.at(i).code == airport_code) ap = airports.at(i); 
     }
     return ap;
+}
+
+std::vector<double> Graph::PageRank(std::vector<std::vector<double>> pg_adj) {
+    int iterations = 300;
+    std::vector<double> init_guess(pg_adj.size(), 0);
+    generate(init_guess.begin(), init_guess.end(), rand);
     
+    std::vector<double> result = init_guess;
+    std::vector<double> new_guess = init_guess;
+
+    for (int iter = 0; iter < iterations; iter++) {
+        for (unsigned i = 0; i < pg_adj.size(); i++) {
+            result[i] = 0;
+            for (unsigned j = 0; j < pg_adj[i].size(); j++) {
+                result[i] += pg_adj[i][j] * new_guess[j];
+            }
+        }
+        new_guess = result;
+    }
+    return new_guess;
+}
+
+std::vector<double> Graph::NormalizedPageRank(std::vector<double> new_guess) {
+    std::vector<double> normalized_pr = new_guess;
+    double norm = sqrt(inner_product(new_guess.begin(), new_guess.end(), new_guess.begin(), 0.0L));
+
+    for (unsigned i = 0; i < new_guess.size(); i++) {
+        normalized_pr[i] = new_guess[i] / norm;
+    }
+    return normalized_pr;
+}
+
+struct Compare {
+    bool operator()(std::pair<double,int> a, std::pair<double, int> b) {
+        return a.first < b.first;
+    }
+};
+
+std::vector<std::string> Graph::PageRankResult(std::vector<double> normalized_pr, int top_nums) {
+    std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, Compare> pq;
+
+    for (unsigned i = 0; i < normalized_pr.size(); i++) {
+        pq.push(std::make_pair(normalized_pr[i], i));
+    }
+    std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, Compare> printq;
+    while (!pq.empty()) {
+        std::cout << pq.top().first << " " << pq.top().second << std::endl;
+        printq.push(pq.top());
+        pq.pop();
+    }
+    std::vector<std::string> to_return;
+    for (int i = 0; i < top_nums; i++) {
+
+        to_return.push_back(airports[printq.top().second].name);
+        printq.pop();
+    }
+    return to_return;
 }
