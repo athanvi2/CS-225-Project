@@ -71,20 +71,6 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
     
     pagerank_adj = adjWithDamping(connections, 0.85);
 
-    // for (auto x : connections) {
-    //     for (auto cell : x) {
-    //         std::cout << cell << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-    // std::cout << "Page Rank Version MOFO: " << std::endl;
-
-    //    for (auto x : pagerank_adj) {
-    //     for (auto cell : x) {
-    //         std::cout << cell << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
 }
 
 /* BFS ALgorithm */

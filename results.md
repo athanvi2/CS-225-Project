@@ -1,7 +1,5 @@
-NEED TO DO
+## BFS
 
-BFS
+## Dijkstra's Algorithm
 
-Dijkstra's Algorithm
-
-Page Rank
+## Page Rank
