@@ -1,4 +1,4 @@
-# Install script for directory: /workspaces/abhithanvi/Desktop/infinitears/cs-225-project/src
+# Install script for directory: /workspaces/cs225/CS-225-Project/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

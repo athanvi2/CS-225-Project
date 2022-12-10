@@ -4,6 +4,13 @@
 int main() {
 	Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv"); 
 
+	for (unsigned i = 0; i < g.pagerank_adj.size(); i++) {
+		for (unsigned j = 0; j < g.pagerank_adj[i].size(); j++) {
+			std::cout << g.pagerank_adj[i][j] << " ";
+		}
+		std::cout << std::endl;
+	}
+	
 	std::vector<double> res = g.PageRank(g.pagerank_adj);
 	std::vector<double> norm = g.NormalizedPageRank(res);
 	for (unsigned i = 0; i < norm.size(); i++) {
@@ -26,23 +33,23 @@ int main() {
 	std::cout << g.getShortestDistance("KAT", "FIZ") << std::endl;
 
 	//JFK,EZE directly connected
-	Graph g2("../clean_airports.csv", "../clean_routes.csv");
+	// Graph g2("../clean_airports.csv", "../clean_routes.csv");
 
-	std::vector<double> res2 = g2.PageRank(g2.pagerank_adj);
-	std::vector<double> norm2 = g2.NormalizedPageRank(res2);
-	for (unsigned i = 0; i < norm2.size(); i++) {
-		std::cout << norm2[i] << std::endl;
-	}
-	std::cout << "WE GUCCI!!!" << std::endl;
+	// std::vector<double> res2 = g2.PageRank(g2.pagerank_adj);
+	// std::vector<double> norm2 = g2.NormalizedPageRank(res2);
+	// for (unsigned i = 0; i < norm2.size(); i++) {
+	// 	std::cout << norm2[i] << std::endl;
+	// }
+	// std::cout << "WE GUCCI!!!" << std::endl;
 
-	std::vector<std::string> top_airports2 = g2.PageRankResult(norm2, 10);
-	std::cout << "WE GUCCI!!!" << std::endl;
-	std::cout << "WE GUCCI!!!" << std::endl;
-	std::cout << "WE GUCCI!!!" << std::endl;
+	// std::vector<std::string> top_airports2 = g2.PageRankResult(norm2, 10);
+	// std::cout << "WE GUCCI!!!" << std::endl;
+	// std::cout << "WE GUCCI!!!" << std::endl;
+	// std::cout << "WE GUCCI!!!" << std::endl;
 
 
-	std::cout << g2.getLeastStopsDistance("JFK", "EZE") << std::endl;
-	std::cout << g2.getShortestDistance("JFK", "EZE") << std::endl;
+	// std::cout << g2.getLeastStopsDistance("JFK", "EZE") << std::endl;
+	// std::cout << g2.getShortestDistance("JFK", "EZE") << std::endl;
 
 	
 	// for (auto e : g.airports.at(0).connected) {

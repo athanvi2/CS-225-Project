@@ -1,6 +1,6 @@
 #include "graph.h"
 
-//Helper for pagerank adj
+/* PageRank Helper: Takes connections 2D vector (adjacency matrix) and uses formula with damping factor and edit connections */
 std::vector<std::vector<double>> Graph::adjWithDamping(std::vector<std::vector<double>> connections, double damping_factor) {
     double damping_factor_formula = (1 - damping_factor) / connections.size();
 
@@ -43,7 +43,10 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
 
     // resize adj_
     adj_.resize(airports.size());
+
+    // resize connections 
     connections.resize(adj_.size());
+
     for (unsigned i = 0; i < airports.size(); i++) adj_[i].resize(airports.size(),0.0);
 
     for (unsigned i = 0; i < adj_.size(); i++) connections[i].resize(adj_.size(),0.0);
@@ -70,7 +73,6 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
         }
     
     pagerank_adj = adjWithDamping(connections, 0.85);
-
 }
 
 /* BFS ALgorithm */
@@ -131,6 +133,7 @@ double Graph::backTrack(airport start, airport dest, std::vector<std::vector<std
     }
     return total_distance;
 }
+
 
 /* Dijkstra's Algorithm */
 double Graph::Dijkstra(airport start, airport dest) {
@@ -244,14 +247,20 @@ airport Graph::convertCodeToAirport(std::string airport_code) {
     return ap;
 }
 
+
+/* PageRank Algorithm */
 std::vector<double> Graph::PageRank(std::vector<std::vector<double>> pg_adj) {
-    int iterations = 300;
+    // iterations for loop needs to run to get values to settle
+    const int iterations = 100;
+
+    // randomly generated intial guess vector
     std::vector<double> init_guess(pg_adj.size(), 0);
     generate(init_guess.begin(), init_guess.end(), rand);
     
     std::vector<double> result = init_guess;
     std::vector<double> new_guess = init_guess;
 
+    // multiplying PageRank adjacency matrix with initial guess vector
     for (int iter = 0; iter < iterations; iter++) {
         for (unsigned i = 0; i < pg_adj.size(); i++) {
             result[i] = 0;
@@ -264,6 +273,7 @@ std::vector<double> Graph::PageRank(std::vector<std::vector<double>> pg_adj) {
     return new_guess;
 }
 
+/* PageRank Helper: Normalizes the vector generated from PageRank function */
 std::vector<double> Graph::NormalizedPageRank(std::vector<double> new_guess) {
     std::vector<double> normalized_pr = new_guess;
     double norm = sqrt(inner_product(new_guess.begin(), new_guess.end(), new_guess.begin(), 0.0L));
@@ -274,12 +284,14 @@ std::vector<double> Graph::NormalizedPageRank(std::vector<double> new_guess) {
     return normalized_pr;
 }
 
+/* PageRank Helper: Used when comparing values in priority queue */
 struct Compare {
     bool operator()(std::pair<double,int> a, std::pair<double, int> b) {
         return a.first < b.first;
     }
 };
 
+/* PageRank Helper: Outputs vector of airport codes in order from most to least popular */
 std::vector<std::string> Graph::PageRankResult(std::vector<double> normalized_pr, int top_nums) {
     std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, Compare> pq;
 
@@ -293,8 +305,7 @@ std::vector<std::string> Graph::PageRankResult(std::vector<double> normalized_pr
     }
     std::vector<std::string> to_return;
     for (int i = 0; i < top_nums; i++) {
-
-        to_return.push_back(airports[printq.top().second].name);
+        to_return.push_back(airports[printq.top().second].code);
         printq.pop();
     }
     return to_return;
