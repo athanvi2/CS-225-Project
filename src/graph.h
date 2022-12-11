@@ -98,8 +98,27 @@ class Graph {
 
         std::vector<std::vector<double>> adjWithDamping(std::vector<std::vector<double>> connections, double damping_factor);
 
+        /**
+         * @brief The PageRank algorithm first populates a 2D vector of doubles
+         * called connections which uses a damping factor (0.85) and formula to 
+         * update "connections" values (happens in adjWithDamping method).
+         * Next the PageRank function randomly generates an initial guess vector and
+         * multiplies it 100 times with the adjacency matrix (connections).
+         * Afterwards, NormalizedPageRank method uses the generated vector from PageRank
+         * method and normalizes it. Finally, PageRankResult method utilizes priority queues
+         * and the Compare struct to keep track of the index of what airport corresponds to 
+         * in the normalized vector. This method also takes in an int which returns as many airport 
+         * codes as the user inputs. It returns a vector of strings which are the airport codes! 
+         * 
+         * 
+         * @returns n number of airport codes from highest -> lowest probabilities
+        */
+
         std::vector<double> PageRank(std::vector<std::vector<double>> pg_adj);
 
+        /* 
+        uses a damping factor (0.85) and formula to create PageRank adjacency matrix
+        */
         std::vector<std::vector<double>> connections;
 
         std::vector<std::vector<double>> pagerank_adj;
@@ -121,7 +140,6 @@ class Graph {
          */
         std::vector<std::vector<double>> adj_;
 
-        
 
          /**
           * @note change to an aiport in airports vector does not make the airport in routes vector change or vice versa
