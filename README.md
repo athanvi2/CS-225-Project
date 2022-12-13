@@ -1,7 +1,7 @@
 # CS225 Final Project - Open Flights
 
 ### Group members:
-* Idrees Mohammed, imoha2
+* Idrees Mohammed, imoha9
 * Khatija Syeda, kasyeda2
 * Zainab Sajid, zsajid2
 * Abhi Thanvi, athanvi2
