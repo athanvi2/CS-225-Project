@@ -58,4 +58,4 @@ in the terminal.
 # What to expect:
 * From `./test`:
 *   We are running test cases regarding our constructor and BFS, Dijkstra, and PageRank algorithms.
-*   You should be expecting to pass tests
+*   You should be expecting to pass 18 tests
