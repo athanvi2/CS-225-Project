@@ -20,7 +20,7 @@ We tried to mimic the CS 225 labs and mps as structures for our file organizatio
 
 ## How does our project work?
 Our program uses data from [Open Flights](https://openflights.org/data.html) to find the shortest path between two airports.
-We use BFS Traversal to find the shortest path from a starting airport to destination airport based on least amount of connected flights. We use Dijkstra's algorithm to find the shortest path from a starting airport to destination airport based on shortest numeric distance. NEED TO DO PAGERANK
+We use BFS Traversal to find the shortest path from a starting airport to destination airport based on least amount of connected flights. We use Dijkstra's algorithm to find the shortest path from a starting airport to destination airport based on shortest numeric distance. We use PageRank as sort of a simulation if there is an issue with where the luggage has been moved or is at. It finds the most “popular” or “high traffic” airports or in other words “most important airport” based on the connections of the airport to other airports.
 
 ## Running Instructions
 
