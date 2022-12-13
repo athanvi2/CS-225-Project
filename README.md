@@ -29,7 +29,7 @@ To download our program, copy and paste this line to your terminal:
 git clone https://github.com/athanvi2/CS-225-Project.git
 ```
 
-1. Delete the build folder
+1. Create the build folder
 ```make
 mkdir build
 ```
