@@ -11,7 +11,7 @@ We tried to mimic the CS 225 labs and mps as structures for our file organizatio
 * Documentations - Project Proposal and Team Contract
 * bin - for running cmake
 * entry - contains `main.cpp`
-* src - has `airport.hpp`, `graph.hpp`, `graph.cpp`, `utils.cpp`, `utils.hpp`
+* src - has `airport.h`, `graph.h`, `graph.cpp`, `utils.cpp`, `utils.h`
 * tests - `test.cpp`
 * main folder - CSV datasets, `results.md`, an image of our self constructed sample graph, jupyter notebook (Python) csv cleaning, and presentation video
 
