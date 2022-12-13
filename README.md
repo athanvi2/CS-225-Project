@@ -6,15 +6,22 @@
 * Zainab Sajid, zsajid2
 * Abhi Thanvi, athanvi2
 
-NEED TO DO: describe the physical location of all major files and deliverables (code, tests, data, the written report, the presentation video, etc…)
+## File Organization
+We tried to mimic the CS 225 labs and mps as structures for our file organization!
+* Documentations - Project Proposal and Team Contract
+* bin - for running cmake
+* entry - contains `main.cpp`
+* src - has `airport.hpp`, `graph.hpp`, `graph.cpp`, `utils.cpp`, `utils.hpp`
+* tests - `test.cpp`
+* main folder - CSV datasets, `results.md`, an image of our self constructed sample graph, jupyter notebook (Python) csv cleaning, and presentation video
 
-# How does our project work?
+## How does our project work?
 Our program uses data from [Open Flights](https://openflights.org/data.html) to find the shortest path between two airports.
 We use BFS Traversal to find the shortest path from a starting airport to destination airport based on least amount of connected flights. We use Dijkstra's algorithm to find the shortest path from a starting airport to destination airport based on shortest numeric distance. NEED TO DO PAGERANK
 
 Our presentation video: NEED TO DO
 
-# How to use our program?
+## Running Instructions
 
 To download our program, copy and paste this line to your terminal:
 
@@ -22,19 +29,33 @@ To download our program, copy and paste this line to your terminal:
 git clone https://github.com/athanvi2/CS-225-Project.git
 ```
 
-### First you will need to edit main.cc:
+1. Delete the build folder
+```make
+mkdir build
+```
+and then
+```make
+cd build
+```
+and finally run,
+```make
+cmake ..
+```
+*This is similar in method to cloning CS 225 release repo/setup*
 
-NEED TO DO
-
-### Second to build the program, you need to run:
+2. To build the program, you can run:
 ```make
 make
 ```
 in the terminal.
 
-next run this command in the terminal: 
-```main
-./main
-```
+3. Different Run Options: 
+* To run main -run `./main`
+* To run tests -run `./test`
+* To run tests with time metrics -run `time ./test`
+*These commands are expected to run in the build directory*
 
-Your results will export automatically in terminal window.
+# What to expect:
+* From `./test`:
+*   We are running test cases regarding our constructor and BFS, Dijkstra, and PageRank algorithms.
+*   You should be expecting to pass tests
