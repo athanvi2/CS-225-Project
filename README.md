@@ -6,6 +6,9 @@
 * Zainab Sajid, zsajid2
 * Abhi Thanvi, athanvi2
 
+### Video Presentation
+https://mediaspace.illinois.edu/media/t/1_4rho6pks/
+
 ## File Organization
 We tried to mimic the CS 225 labs and mps as structures for our file organization!
 * Documentations - Project Proposal and Team Contract
