@@ -115,6 +115,10 @@ class Graph {
         */
 
         std::vector<double> PageRank(std::vector<std::vector<double>> pg_adj);
+    
+        std::vector<double> NormalizedPageRank(std::vector<double> new_guess);
+    
+        std::vector<std::string> PageRankResult(std::vector<double> normalized_pr, int top_nums);
 
         /* 
         uses a damping factor (0.85) and formula to create PageRank adjacency matrix
@@ -122,10 +126,6 @@ class Graph {
         std::vector<std::vector<double>> connections;
 
         std::vector<std::vector<double>> pagerank_adj;
-
-        std::vector<double> NormalizedPageRank(std::vector<double> new_guess);
-
-        std::vector<std::string> PageRankResult(std::vector<double> normalized_pr, int top_nums);
 
     private:
         /* Vector of all vertices */ 
