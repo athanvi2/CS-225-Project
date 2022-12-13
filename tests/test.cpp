@@ -8,99 +8,146 @@
 #include "utils.h"
 #include "airport.h"
 
+
 /* Constructor tests */
+
+TEST_CASE("First row of connections vector (Constructor)") {
+    Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv");
+    std::vector<double> test = {0, 1, 1, 0, 0, 0, 1, 0, 0, 0};
+    REQUIRE(g.connections[0] == test);
+}
+
+TEST_CASE("Last row of connections vector (Constructor)") {
+    Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv");
+    std::vector<double> test = {0, 0, 0, 0, 0, 0, 0, 0, 1, 0};
+    REQUIRE(g.connections[g.connections.size() - 1] == test);
+}
+
+TEST_CASE("Size of connections vector is square (Constructor)") {
+    Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv");
+    REQUIRE(g.connections.size() == g.connections[0].size());
+}
+
+TEST_CASE("Size of connections vector is square - big data set (Constructor)") {
+    Graph g2("../clean_airports.csv", "../clean_routes.csv");
+    REQUIRE(g2.connections.size() == g2.connections[0].size());
+}
 
 
 /* Distance based on least number of stops between two airports tests (BFS Algorithm) */
 
-// TEST_CASE("Distance based on least number of stops between two airports that do not connect #1 (SMALL GRAPH)", "[weight=1]") {
-//     std::string airport_one = "ZAH";
-//     std::string airport_two = "KAT";
-//     Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv"); 
-//     std::string result = g.getLeastStopsDistance(airport_one, airport_two);
-//     REQUIRE(result == "-1");
-// }
+TEST_CASE("Distance based on least number of stops between two airports that do not connect #1 (SMALL GRAPH)", "[weight=1]") {
+    std::string airport_one = "ZAH";
+    std::string airport_two = "KAT";
+    Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv"); 
+    airport one = g.convertCodeToAirport("ZAH");
+    airport two = g.convertCodeToAirport("KAT");
+    int result = (int) g.BFS(one, two);
+    REQUIRE(result == -1);
+}
 
-// TEST_CASE("Distance based on least number of stops between two airports that connect directly #1 (SMALL GRAPH)") {
-//     std::string airport_one = "ZU";
-//     std::string airport_two = "HAM";
-//     Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv"); 
-//     std::string result = g.getLeastStopsDistance(airport_one, airport_two);
-//     REQUIRE(result == "14306");
+TEST_CASE("Distance based on least number of stops between two airports that connect directly #1 (SMALL GRAPH)") {
+    std::string airport_one = "ZU";
+    std::string airport_two = "HAM";
+    Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv"); 
+    airport one = g.convertCodeToAirport("ZU");
+    airport two = g.convertCodeToAirport("HAM");
+    int result = (int) g.BFS(one, two);
+    REQUIRE(result == 14306);
    
-// }
+}
 
-// TEST_CASE("Distance based on least number of stops between two airports that connect directly #2 (BIG GRAPH)") {
-//     std::string airport_one = "JFK";
-//     std::string airport_two = "EZE";
-//     Graph g("../clean_airports.csv", "../clean_routes.csv");
-//     std::string result = g.getLeastStopsDistance(airport_one, airport_two);
-//     REQUIRE(result == "8534");
+TEST_CASE("Distance based on least number of stops between two airports that connect directly #2 (BIG GRAPH)") {
+    std::string airport_one = "JFK";
+    std::string airport_two = "EZE";
+    Graph g("../clean_airports.csv", "../clean_routes.csv");
+    airport one = g.convertCodeToAirport("JFK");
+    airport two = g.convertCodeToAirport("EZE");
+    int result = (int) g.BFS(one, two);    
+    REQUIRE(result == 8534);
  
-// }
+}
 
-// TEST_CASE("Distance based on least number of stops between two airports that connect indirectly #1 (SMALL GRAPH)") {
-//     std::string airport_one = "KAT";
-//     std::string airport_two = "FIZ";
-//     Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv"); 
-//     std::string result = g.getLeastStopsDistance(airport_one, airport_two);
-//     REQUIRE(result == "16373");
+TEST_CASE("Distance based on least number of stops between two airports that connect indirectly #1 (SMALL GRAPH)") {
+    std::string airport_one = "KAT";
+    std::string airport_two = "FIZ";
+    Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv"); 
+    airport one = g.convertCodeToAirport("KAT");
+    airport two = g.convertCodeToAirport("FIZ");
+    int result = (int) g.BFS(one, two);    
+    REQUIRE(result == 16373);
   
-// }
+}
 
-// TEST_CASE("Distance based on least number of stops between two airports that connect indirectly #2 (BIG GRAPH)") {
-//     std::string airport_one = "AUS";
-//     std::string airport_two = "LHR";
-//     Graph g("../clean_airports.csv", "../clean_routes.csv");
-//     std::string result = g.getLeastStopsDistance(airport_one, airport_two);
-//     REQUIRE(result == "8066");
-// }
+TEST_CASE("Distance based on least number of stops between two airports that connect indirectly #2 (BIG GRAPH)") {
+    std::string airport_one = "AUS";
+    std::string airport_two = "LHR";
+    Graph g("../clean_airports.csv", "../clean_routes.csv");
+    airport one = g.convertCodeToAirport("AUS");
+    airport two = g.convertCodeToAirport("LHR");
+    int result = (int) g.BFS(one, two);    
+    REQUIRE(result == 8066);
+}
 
-// /* Distance based on shortest distance between two airports tests (Dijkstra's Algorithm) */
 
-// TEST_CASE("Distance based on shortest distance between two airports that do not connect #1 (SMALL GRAPH)") {
-//     std::string airport_one = "AMU";
-//     std::string airport_two = "IDS";
-//     Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv"); 
-//     std::string result = g.getShortestDistance(airport_one, airport_two);
-//     REQUIRE(result == "-1");
-// }
+/* Distance based on shortest distance between two airports tests (Dijkstra's Algorithm) */
 
-// TEST_CASE("Distance based on shortest distance between two airports that connect directly #1 (SMALL GRAPH)") {
-//     std::string airport_one = "ZU";
-//     std::string airport_two = "HAM";
-//     Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv"); 
-//     std::string result = g.getShortestDistance(airport_one, airport_two);
-//     REQUIRE(result == "14306");
+TEST_CASE("Distance based on shortest distance between two airports that do not connect #1 (SMALL GRAPH)") {
+    std::string airport_one = "AMU";
+    std::string airport_two = "IDS";
+    Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv"); 
+    airport one = g.convertCodeToAirport("AMU");
+    airport two = g.convertCodeToAirport("IDS");
+    int result = (int) g.Dijkstra(one, two);    
+    REQUIRE(result == -1);
+}
+
+TEST_CASE("Distance based on shortest distance between two airports that connect directly #1 (SMALL GRAPH)") {
+    std::string airport_one = "ZU";
+    std::string airport_two = "HAM";
+    Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv"); 
+    airport one = g.convertCodeToAirport("ZU");
+    airport two = g.convertCodeToAirport("HAM");
+    int result = (int) g.Dijkstra(one, two);  
+    REQUIRE(result == 14306);
    
-// }
+}
 
-// TEST_CASE("Distance based on shortest distance between two airports that connect directly #2 (BIG GRAPH)") {
-//     std::string airport_one = "JFK";
-//     std::string airport_two = "EZE";
-//     Graph g("../clean_airports.csv", "../clean_routes.csv");
-//     std::string result = g.getShortestDistance(airport_one, airport_two);
-//     REQUIRE(result == "8534");
+TEST_CASE("Distance based on shortest distance between two airports that connect directly #2 (BIG GRAPH)") {
+    std::string airport_one = "JFK";
+    std::string airport_two = "EZE";
+    Graph g("../clean_airports.csv", "../clean_routes.csv");
+    airport one = g.convertCodeToAirport("JFK");
+    airport two = g.convertCodeToAirport("EZE");
+    int result = (int) g.Dijkstra(one, two);  
+    REQUIRE(result == 8534);
 
-// }
+}
 
-// TEST_CASE("Distance based on shortest distance between two airports that connect indirectly #1 (SMALL GRAPH)") {
-//     std::string airport_one = "KAT";
-//     std::string airport_two = "FIZ";
-//     Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv"); 
-//     std::string result = g.getShortestDistance(airport_one, airport_two);
-//     REQUIRE(result == "12499");
+TEST_CASE("Distance based on shortest distance between two airports that connect indirectly #1 (SMALL GRAPH)") {
+    std::string airport_one = "KAT";
+    std::string airport_two = "FIZ";
+    Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv"); 
+    airport one = g.convertCodeToAirport("KAT");
+    airport two = g.convertCodeToAirport("FIZ");
+    int result = (int) g.Dijkstra(one, two);  
+    REQUIRE(result == 12499);
 
-// }
+}
 
-// TEST_CASE("Distance based on shortest distance between two airports that connect indirectly #2 (BIG GRAPH)") {
-//     std::string airport_one = "AUS";
-//     std::string airport_two = "LHR";
-//      Graph g("../clean_airports.csv", "../clean_routes.csv");
-//     std::string result = g.getShortestDistance(airport_one, airport_two);
-//     REQUIRE(result == "7907");
+TEST_CASE("Distance based on shortest distance between two airports that connect indirectly #2 (BIG GRAPH)") {
+    std::string airport_one = "AUS";
+    std::string airport_two = "LHR";
+    Graph g("../clean_airports.csv", "../clean_routes.csv");
+    airport one = g.convertCodeToAirport("AUS");
+    airport two = g.convertCodeToAirport("LHR");
+    int result = (int) g.Dijkstra(one, two);  
+    REQUIRE(result == 7907);
  
-// }
+}
+
+
+/* Importance of Airport based on PageRank (PageRank Algorithm) */
 
 TEST_CASE("PageRank - Size of adjacency matrix w/ damping (Small Dataset") {
     Graph g("../airports_friends.csv", "../route_friends_wo_duplicates.csv");

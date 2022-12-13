@@ -71,7 +71,6 @@ Graph::Graph(std::string airport_csv, std::string routes_csv) {
                 else connections.at(row).at(col) = 0.0;
             }
         }
-    
     pagerank_adj = adjWithDamping(connections, 0.85);
 }
 
